@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,27 +15,46 @@ public class UISpriteAnimation : MonoBehaviour
     private int m_IndexSprite;
     Coroutine m_CorotineAnim;
     bool IsDone;
-    public void Func_PlayUIAnim()
+    public bool loop = true;
+    public bool autoStart = true;
+
+    private void Start()
     {
-        IsDone = false;
-        StartCoroutine(Func_PlayAnimUI());
+        if (autoStart)
+        {
+            StartUIAnim();
+        }
     }
 
-    public void Func_StopUIAnim()
+    public void StartUIAnim()
+    {
+        IsDone = false;
+        StartCoroutine(PlayAnimUI());
+    }
+    public void StopUIAnim()
     {
         IsDone = true;
-        StopCoroutine(Func_PlayAnimUI());
+        StopCoroutine(PlayAnimUI());
     }
-    IEnumerator Func_PlayAnimUI()
+    IEnumerator PlayAnimUI()
     {
         yield return new WaitForSeconds(m_Speed);
         if (m_IndexSprite >= m_SpriteArray.Length)
         {
-            m_IndexSprite = 0;
+            if (loop)
+            {
+                m_IndexSprite = 0;    
+            }
+            else
+            {
+                IsDone = true;
+                StopUIAnim();
+            }
+            
         }
         m_Image.sprite = m_SpriteArray[m_IndexSprite];
         m_IndexSprite += 1;
         if (IsDone == false)
-            m_CorotineAnim = StartCoroutine(Func_PlayAnimUI());
+            m_CorotineAnim = StartCoroutine(PlayAnimUI());
     }
 }
